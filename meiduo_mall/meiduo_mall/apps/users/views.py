@@ -1,6 +1,7 @@
 import json
 import re
 
+from django.contrib.auth import login
 from django.http import JsonResponse
 from django.views import View
 from django_redis import get_redis_connection
@@ -97,6 +98,9 @@ class RegisterView(View):
         except Exception as e:
             return JsonResponse({'code': 400,
                                  'message': '数据库保存错误!'})
+
+        # 登陆状态保存
+        login(request, user)
 
         # 4.返回响应
         return JsonResponse({'code': 0,
