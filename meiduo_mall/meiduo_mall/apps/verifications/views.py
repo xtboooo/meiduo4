@@ -71,12 +71,19 @@ class SMSCodeView(View):
         sms_code = '%06d' % random.randint(0, 999999)
         logger.info('短信验证码为:%s' % sms_code)
 
+        # 创建redis pipeline管道
+        pl = redis_conn.pipeline()
+        # 将redis请求操作添加到队列
         # 保存短信验证码
-        redis_conn.set('sms_%s' % mobile, sms_code, 300)
+        pl.set('sms_%s' % mobile, sms_code, 300)
+
+        # 设置短信发送的标记，有效期为：60s
+        pl.set('send_flag_%s' % mobile, 1, 60)
+
+        # 执行redis pipeline请求
+        pl.execute()
 
         # 发送短信验证码
-        # 设置短信发送的标记，有效期为：60s
-        redis_conn.set('send_flag_%s' % mobile, 1, 60)
         CCP().send_template_sms(mobile, [sms_code, 5], 1)
 
         # 返回响应
