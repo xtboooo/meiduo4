@@ -1,7 +1,7 @@
 import json
 import re
 
-from django.contrib.auth import login
+from django.contrib.auth import login, authenticate
 from django.http import JsonResponse
 from django.views import View
 from django_redis import get_redis_connection
@@ -92,9 +92,9 @@ class RegisterView(View):
 
         # 3.保存用户信息到数据库
         try:
-            user = User.objects.create(username=username,
-                                       password=password,
-                                       mobile=mobile, )
+            user = User.objects.create_user(username=username,
+                                            password=password,
+                                            mobile=mobile, )
         except Exception as e:
             return JsonResponse({'code': 400,
                                  'message': '数据库保存错误!'})
@@ -118,3 +118,35 @@ class CSRFTokenView(View):
         return JsonResponse({'code': 0,
                              'message': 'OK',
                              'csrf_token': csrf_token, })
+
+
+# POST /login/
+class LoginView(View):
+    def post(self, request):
+        """ 用户登录试图 """
+        # 1.获取参数并校验
+        req_data = json.loads(request.body)
+        username = req_data.get('username')
+        password = req_data.get('password')
+        remember = req_data.get('remember')
+
+        if not all([username, password]):
+            return JsonResponse({'code': 400,
+                                 'message': '缺少必传参数'})
+
+        # 2.判断密码是否正确
+        user = authenticate(username=username, password=password)
+
+        if user is None:
+            return JsonResponse({'code': 400,
+                                 'message': '用户名或密码错误!'})
+
+        # 3.登陆状态保存
+        login(request, user)
+        if not remember:
+            # 如果未选择记住登录，浏览器关闭即失效
+            request.session.set_expiry(0)
+
+        # 4.返回响应数据
+        return JsonResponse({'code': 0,
+                             'message': 'OK'})
