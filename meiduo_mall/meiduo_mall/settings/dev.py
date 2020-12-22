@@ -27,7 +27,7 @@ SECRET_KEY = '$8@n*#%=b)d_e1$-atw5w4&)3sp4rraa-zvz$qr17xxh$f#gzd'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -39,11 +39,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'corsheaders',
     # 子应用注册
     'users.apps.UsersConfig',
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -202,3 +204,11 @@ STATIC_URL = '/static/'
 # 替换auth子应用中内置的User模型类
 # 固定格式：AUTH_USER_MODEL = '子应用名.模型类名'
 AUTH_USER_MODEL = 'users.User'
+
+
+# CORS跨域请求白名单设置
+CORS_ORIGIN_WHITELIST = (
+    # 将异步跨域请求中，Origin请求头携带的源请求地址添加到此处的白名单中
+    'http://www.meiduo.site:8080',
+)
+CORS_ALLOW_CREDENTIALS = True  # 允许携带cookie
