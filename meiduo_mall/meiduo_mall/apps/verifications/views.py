@@ -9,6 +9,8 @@ import logging
 
 from meiduo_mall.libs.yuntongxun.ccp_sms import CCP
 
+from celery_tasks.sms.tasks import send_sms_code
+
 logger = logging.getLogger('django')
 
 
@@ -84,8 +86,8 @@ class SMSCodeView(View):
         pl.execute()
 
         # 发送短信验证码
-        CCP().send_template_sms(mobile, [sms_code, 5], 1)
-
+        # CCP().send_template_sms(mobile, [sms_code, 5], 1)
+        send_sms_code.delay(mobile, sms_code)
         # 返回响应
         return JsonResponse({'code': 0,
                              'message': '发送短信成功!'})
