@@ -9,5 +9,5 @@ from celery_tasks.sms.yuntongxun.ccp_sms import CCP
 def send_sms_code(mobile, sms_code):
     """ 封装任务函数 """
     print('手机号是: %s短信验证码为:%s' % (mobile, sms_code))
-    CCP().send_template_sms(mobile, [sms_code, 5], 1)
+    # CCP().send_template_sms(mobile, [sms_code, 5], 1)
 

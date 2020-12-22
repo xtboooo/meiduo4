@@ -20,6 +20,7 @@ class ImageCodeView(View):
         """ 获取图片验证码数据 """
         # 1.生成图片验证码数据
         text, image = captcha.generate_captcha()
+        logger.info('图形验证码为:% s' % text)
 
         # 2.保存图片验证码文本到redis
         redis_conn = get_redis_connection('verify_code')
@@ -88,6 +89,10 @@ class SMSCodeView(View):
         # 发送短信验证码
         # CCP().send_template_sms(mobile, [sms_code, 5], 1)
         send_sms_code.delay(mobile, sms_code)
+
         # 返回响应
         return JsonResponse({'code': 0,
                              'message': '发送短信成功!'})
+
+
+
