@@ -195,3 +195,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
 STATIC_URL = '/static/'
+
+
+# 替换auth子应用中内置的User模型类
+# 固定格式：AUTH_USER_MODEL = '子应用名.模型类名'
+AUTH_USER_MODEL = 'users.User'
